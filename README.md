@@ -1,6 +1,6 @@
 # Synthetic FCC Dataset Generator
 
-Synthetic dataset generator for catalytic cracking (FCC) process data — 26,000 rows, 1 year, 5-minute intervals. Built as part of a data analyst portfolio.
+Synthetic dataset generator for catalytic cracking (FCC) process data — 105,120 rows, 1 year, 5-minute intervals. Built as part of a data analyst portfolio.
 
 ## About
 
@@ -10,7 +10,7 @@ The dataset is used as the foundation for a Manufacturing Quality Analysis proje
 
 ## Features
 
-- ~26,280 rows of process data at 5-minute intervals
+- 105.120 rows of process data at 5-minute intervals
 - Realistic catalyst activity degradation curve with periodic replacement events
 - Day/night variation in feed flow and temperature setpoints
 - Random process disturbances (air flow fluctuations, power dips)
