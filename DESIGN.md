@@ -32,7 +32,7 @@ of the reference Kaggle dataset.
 
 - `Catalyst_Activity` must show realistic degradation drift over time (declining trend, reset on `Catalyst_Replacement`)
 - `Product_Yield` and `Conversion_Rate` follow a bell curve optimum relative to `Reactor_Temperature`
-- Day/night variation must be present in feed flow and temperature setpoints
+- - Process conditions follow monthly average outside temperature (NL climate data)
 - `External_Disturbance_Type` is `None` the majority of the time
 - All values must stay within defined min/max ranges
 
@@ -42,7 +42,7 @@ of the reference Kaggle dataset.
 def generate_timestamps(duration_days: int) -> pd.DatetimeIndex:
     """
     Generates a sequence of timestamps at 5-minute intervals for a given number of days.
-	
+
 	Args:
 		duration_days: days for determining count of timestamps. default = 365
 	Returns:
@@ -55,24 +55,28 @@ def generate_catalyst_activity(timestamps: pd.DatetimeIndex) -> np.ndarray:
     """
     Function that generates catalyst degradation. Catalyst degradation causes yield to decrease over time. Conversion to desired products declines, while undesired products increase.
 	Activity declines to 70-76% after 24 hours, stabilizes with mean 72-73%. Replacement under 65%.
-	
-	
+
+
 	Args:
 		timestamps: sequence of datetime values defining the time axis of the dataset
-		
+
 	Returns:
 		Catalyst_Activity in type float
     """
     pass
 
 
-def generate_base_signals(timestamps: pd.DatetimeIndex, outside_temp) -> pd.DataFrame:
+def generate_base_signals(
+        timestamps: pd.DatetimeIndex,
+        outside_temp,
+        catalyst_activity: np.ndarray) -> pd.DataFrame:
     """
     Function for generating all base signals.
-	
+
 	Args:
 		timestamps: sequence of datetime values defining the time axis of the dataset
 		outside_temp: outside temperature influencing the 'Air_FLow_Rate', 'Regenerator_Temperature' and 'Energy_Consumption'
+		catalyst_activity: state of catalyst that influences quality and output
 	Returns:
 		All base signals in type float
     """
@@ -82,7 +86,7 @@ def generate_base_signals(timestamps: pd.DatetimeIndex, outside_temp) -> pd.Data
 def generate_events(timestamps: pd.DatetimeIndex, event_frequency: float) -> pd.DataFrame:
     """
     Function for generating random events that influences the process conditions.
-	
+
 	Args:
 		timestamps: sequence of datetime values defining the time axis of the dataset
 		event_frequency: random generated event.
@@ -95,7 +99,7 @@ def generate_events(timestamps: pd.DatetimeIndex, event_frequency: float) -> pd.
 def apply_correlations(df: pd.DataFrame) -> pd.DataFrame:
     """
     Function to apply Gaussian/bell curve to the yield and conversion rate.
-	
+
 	Args:
 		df: DataFrame containing all process variables, including Reactor_Temperature as input for correlation calculations
 	Returns:
