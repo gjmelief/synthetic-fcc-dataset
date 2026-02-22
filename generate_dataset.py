@@ -85,12 +85,22 @@ def generate_base_signals(
     gaussian_output = np.exp(-((reactor_temperature - 520) ** 2) / (2 * 13 **2))
     product_yield = 40 + (gaussian_output * 20)
     conversion_rate = 70 + (gaussian_output * 20)
+    regenerator_temperature = np.clip(np.random.normal(700, 25, len(timestamps)), 650, 750)
+    fractionator_top_temp = np.clip(np.random.normal(176, 12, len(timestamps)), 150, 200)
+    fractionator_bottom_temp = np.clip(np.random.normal(330, 15, len(timestamps)), 300, 360)
+    setpoint_reactor_temp = np.clip(np.random.normal(520, 10, len(timestamps)), 500, 540)
+    setpoint_regenerator_temp = np.clip(np.random.normal(700, 10, len(timestamps)), 680, 720)
     df = pd.DataFrame({
         'Reactor_Temperature': reactor_temperature,
         'Product_Yield': product_yield,
         'Conversion_Rate': conversion_rate,
-        'Outside_Temp': avg_temp_month
-    })
+        'Outside_Temp': avg_temp_month,
+        'Regenerator_Temperature': regenerator_temperature,
+        'Fractionator_Top_Temp': fractionator_top_temp,
+        'Fractionator_Bottom_Temp': fractionator_bottom_temp,
+        'Setpoint_Reactor_Temp': setpoint_reactor_temp,
+        'Setpoint_Regenerator_Temp': setpoint_regenerator_temp
+        })
 
 
 # %%
