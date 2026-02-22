@@ -1,4 +1,3 @@
-# %%
 import pandas as pd
 import numpy as np
 
@@ -49,11 +48,49 @@ def generate_catalyst_activity(timestamps: pd.DatetimeIndex) -> np.ndarray:
     catalyst_activity = np.concatenate(activity_cycles)
     return catalyst_activity
 
+def generate_base_signals(
+        timestamps: pd.DatetimeIndex,
+        outside_temp,
+        catalyst_activity: np.ndarray) -> pd.DataFrame:
+    """
+    Function for generating all base signals.
 
-timestamps = generate_timestamps(365)
-activity = generate_catalyst_activity(timestamps)
+	Args:
+		timestamps: sequence of datetime values defining the time axis of the dataset
+		outside_temp: outside temperature influencing the 'Air_FLow_Rate', 'Regenerator_Temperature' and 'Energy_Consumption'
+	Returns:
+		All base signals in type float
+    """
 
-print(f"Length: {len(activity)}")
-print(f"Min: {activity.min():.2f}")
-print(f"Max: {activity.max():.2f}")
-print(f"Mean: {activity.mean():.2f}")
+    monthly_temp_nl = {
+    1: 3.5,   # January
+    2: 4.0,   # February
+    3: 7.0,   # March
+    4: 10.5,  # April
+    5: 14.0,  # May
+    6: 17.0,  # June
+    7: 19.5,  # July
+    8: 19.5,  # August
+    9: 16.0,  # September
+    10: 12.0, # October
+    11: 7.5,  # November
+    12: 4.5   # December
+    }
+    # %%
+    avg_temp_month = pd.Series(timestamps.month).map(monthly_temp_nl)
+    reactor_temperature = np.clip(np.random.normal(loc=520,
+                                                   scale=23,
+                                                   size=len(timestamps)),
+                                                   480, 560)
+    gaussian_output = np.exp(-((reactor_temperature - 520) ** 2) / (2 * 13 **2))
+    product_yield = 40 + (gaussian_output * 20)
+    conversion_rate = 70 + (gaussian_output * 20)
+    df = pd.DataFrame({
+        'Reactor_Temperature': reactor_temperature,
+        'Product_Yield': product_yield,
+        'Conversion_Rate': conversion_rate,
+        'Outside_Temp': avg_temp_month
+    })
+
+
+# %%
