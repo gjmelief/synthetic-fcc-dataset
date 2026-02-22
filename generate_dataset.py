@@ -61,22 +61,20 @@ def generate_base_signals(
 	Returns:
 		All base signals in type float
     """
-
     monthly_temp_nl = {
-    1: 3.5,   # January
-    2: 4.0,   # February
-    3: 7.0,   # March
-    4: 10.5,  # April
-    5: 14.0,  # May
-    6: 17.0,  # June
-    7: 19.5,  # July
-    8: 19.5,  # August
-    9: 16.0,  # September
-    10: 12.0, # October
-    11: 7.5,  # November
-    12: 4.5   # December
+        1: 3.5,   # January
+        2: 4.0,   # February
+        3: 7.0,   # March
+        4: 10.5,  # April
+        5: 14.0,  # May
+        6: 17.0,  # June
+        7: 19.5,  # July
+        8: 19.5,  # August
+        9: 16.0,  # September
+        10: 12.0, # October
+        11: 7.5,  # November
+        12: 4.5   # December
     }
-    # %%
     avg_temp_month = pd.Series(timestamps.month).map(monthly_temp_nl)
     reactor_temperature = np.clip(np.random.normal(loc=520,
                                                    scale=23,
@@ -90,6 +88,20 @@ def generate_base_signals(
     fractionator_bottom_temp = np.clip(np.random.normal(330, 15, len(timestamps)), 300, 360)
     setpoint_reactor_temp = np.clip(np.random.normal(520, 10, len(timestamps)), 500, 540)
     setpoint_regenerator_temp = np.clip(np.random.normal(700, 10, len(timestamps)), 680, 720)
+    reactor_pressure = np.clip(np.random.normal(201, 25, len(timestamps)), 150, 250)
+    feed_flow_rate = np.clip(np.random.normal(84, 17, len(timestamps)), 50, 120)
+    catalyst_to_oil_ratio = np.clip(np.random.normal(6, 1, len(timestamps)), 4, 8)
+    # Colder air is denser, requiring less volumetric flow to deliver
+    # the same oxygen mass. Effect: ~6% variation over NL seasonal range.
+    # Scale factor: 6% of mean flow / 16°C temp range = ~244 per degree C
+    # NL annual mean temperature = 11°C (KNMI climate data)
+    # Used as baseline: deviations above/below drive air flow adjustment
+    temp_effect = (avg_temp_month - 11) * -244
+    air_flow_rate = np.clip(np.random.normal(65258 + temp_effect,
+                                             7481,
+                                             len(timestamps)),
+                                             50023, 79948)
+
     df = pd.DataFrame({
         'Reactor_Temperature': reactor_temperature,
         'Product_Yield': product_yield,
@@ -99,8 +111,9 @@ def generate_base_signals(
         'Fractionator_Top_Temp': fractionator_top_temp,
         'Fractionator_Bottom_Temp': fractionator_bottom_temp,
         'Setpoint_Reactor_Temp': setpoint_reactor_temp,
-        'Setpoint_Regenerator_Temp': setpoint_regenerator_temp
+        'Setpoint_Regenerator_Temp': setpoint_regenerator_temp,
+        'Reactor_Pressure': reactor_pressure,
+        'Feed_Flow_Rate': feed_flow_rate,
+        'Catalyst_to_Oil_Ratio': catalyst_to_oil_ratio,
+        'Air_Flow_Rate': air_flow_rate,
         })
-
-
-# %%
