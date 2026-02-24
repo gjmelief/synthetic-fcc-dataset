@@ -1,3 +1,4 @@
+# %%
 import pandas as pd
 import numpy as np
 
@@ -74,11 +75,11 @@ def generate_normal_column(params: pd.DataFrame,
         np.ndarray of generated values clipped between min and max
     """
 
-    mean = params.loc['mean', col_name]
-    std = params.loc['std', col_name]
-    min_val = params.loc['min', col_name]
-    max_val = params.loc['max', col_name]
-    normal_column = np.clip(np.random.normal(mean, std, size), min_val, max_val)
+    mean = params.at['mean', col_name]
+    std = params.at['std', col_name]
+    min_val = params.at['min', col_name]
+    max_val = params.at['max', col_name]
+    normal_column = np.clip(np.random.normal(mean, std, size), min_val, max_val)  # type: ignore
     return normal_column
 
 def generate_outside_temp(timestamps: pd.DatetimeIndex) -> pd.Series:
@@ -133,7 +134,6 @@ def generate_base_signals(
     Returns:
         pd.DataFrame with one row per timestamp and one column per signal.
     """
-
     params = load_reference_params(filepath)
     exclude_cols = [
         'Outside_Temp',
@@ -180,3 +180,4 @@ def generate_base_signals(
     df['Product_Yield'] = product_yield
     df['Conversion_Rate'] = conversion_rate
     return df
+# %%
