@@ -1,3 +1,4 @@
+
 import pandas as pd
 import numpy as np
 
@@ -152,6 +153,7 @@ def generate_base_signals(
             df[col] = generate_normal_column(params, col, len(timestamps))
 
     df = pd.DataFrame(df)
+    df.insert(0, 'Timestamp', timestamps)
 
     reactor_temperature = np.clip(np.random.normal(loc=520,
                                                    scale=23,
@@ -222,3 +224,14 @@ def apply_correlations(df: pd.DataFrame) -> pd.DataFrame:
                                       ((df['Reactor_Temperature'] - 520) / 40) ** 2)
 
     return df
+
+if __name__ == '__main__':
+    timestamps = generate_timestamps(365)
+    catalyst_activity = generate_catalyst_activity(timestamps)
+    outside_temp = generate_outside_temp(timestamps)
+    base_df = generate_base_signals(timestamps, outside_temp, catalyst_activity,
+                                    'catalytic_cracking_dataset.csv')
+    events_df = generate_events(timestamps)
+    final_df = pd.concat([base_df, events_df], axis=1)
+    fcc_dataframe = apply_correlations(final_df)
+# %%
