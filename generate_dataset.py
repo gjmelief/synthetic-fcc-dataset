@@ -1,4 +1,3 @@
-# %%
 import pandas as pd
 import numpy as np
 
@@ -205,4 +204,21 @@ def generate_events(timestamps: pd.DatetimeIndex) -> pd.DataFrame:
     df['External_Disturbance_Type'] = external_disturbance_type
 
     return df
-# %%
+
+def apply_correlations(df: pd.DataFrame) -> pd.DataFrame:
+    """
+    Applies Gaussian bell curve to Product_Yield and Conversion_Rate
+    relative to Reactor_Temperature optimum.
+
+    Args:
+        df: DataFrame containing all process variables, including Reactor_Temperature
+    Returns:
+        DataFrame with updated Product_Yield and Conversion_Rate columns
+    """
+    # sigma = 40   controls width of bell curve; 95% of yield within ±80°C of optimum
+    df['Product_Yield'] = 60 * np.exp(-0.5 *
+                                      ((df['Reactor_Temperature'] - 520) / 40) ** 2)
+    df['Conversion_Rate'] = 90 * np.exp(-0.5 *
+                                      ((df['Reactor_Temperature'] - 520) / 40) ** 2)
+
+    return df
