@@ -2,6 +2,9 @@
 
 Synthetic dataset generator for catalytic cracking (FCC) process data — 105,120 rows, 1 year, 5-minute intervals. Built as part of a data analyst portfolio.
 
+## Reference Dataset
+This generator is based on the [Catalytic Cracking Process Control Dataset](https://www.kaggle.com/datasets/programmer3/catalytic-cracking-process-control-dataset) by programmer3, licensed under [CC0 1.0 Public Domain](https://creativecommons.org/publicdomain/zero/1.0/).
+
 ## About
 
 This project generates a realistic synthetic dataset simulating one year of Fluid Catalytic Cracking (FCC) process operations. The generated dataset is based on real-world value ranges and behavioral patterns, including catalyst activity degradation, day/night variation, and process disturbances.
