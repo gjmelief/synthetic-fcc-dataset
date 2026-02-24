@@ -48,7 +48,7 @@ def generate_catalyst_activity(timestamps: pd.DatetimeIndex) -> np.ndarray:
     catalyst_activity = np.concatenate(activity_cycles)
     return catalyst_activity
 
-def load_reference_params(filepath) -> pd.DataFrame:
+def load_reference_params(filepath: str) -> pd.DataFrame:
     """Function for loading the reference dataframe and extracting the description.
 
     Args:
@@ -60,7 +60,9 @@ def load_reference_params(filepath) -> pd.DataFrame:
     params = ref_df.describe()
     return params
 
-def generate_normal_column(params, col_name, size) -> np.ndarray:
+def generate_normal_column(params: pd.DataFrame,
+                           col_name: str,
+                           size: int) -> np.ndarray:
     """Helper function for generating the parameters needed for the base signal
     function.
 
@@ -104,24 +106,35 @@ def generate_outside_temp(timestamps: pd.DatetimeIndex) -> pd.Series:
         11: 7.5,  # November
         12: 4.5   # December
     }
-    avg_temp_month = pd.Series(timestamps.month).map(monthly_temp_nl)
-    return avg_temp_month
+    outside_temp = pd.Series(timestamps.month).map(monthly_temp_nl)
+    return outside_temp
 
 def generate_base_signals(
         timestamps: pd.DatetimeIndex,
-        outside_temp,
-        catalyst_activity: np.ndarray) -> pd.DataFrame:
+        outside_temp: pd.Series,
+        catalyst_activity: np.ndarray,
+        filepath: str) -> pd.DataFrame:
     """
-    Function for generating all base signals.
+    Generate all base process signals for the synthetic FCC dataset.
 
-	Args:
-		timestamps: sequence of datetime values defining the time axis of the dataset
-		outside_temp: outside temperature influencing the 'Air_FLow_Rate', 'Regenerator_Temperature' and 'Energy_Consumption'
-	Returns:
-		All base signals in type float
+    Columns generated via normal distribution use statistical parameters
+    derived from the reference dataset. Reactor_Temperature, Product_Yield,
+    Conversion_Rate, and Air_Flow_Rate use custom logic due to process
+    dependencies and seasonal effects.
+
+    Args:
+        timestamps: Sequence of datetime values defining the time axis.
+        outside_temp: Monthly average outside temperature per timestamp
+            in degrees Celsius (from generate_outside_temp()).
+        catalyst_activity: Array of catalyst activity values per timestamp
+            (from generate_catalyst_activity()).
+        filepath: Path to the reference CSV dataset for parameter extraction.
+
+    Returns:
+        pd.DataFrame with one row per timestamp and one column per signal.
     """
 
-    params = load_reference_params('catalytic_cracking_dataset.csv')
+    params = load_reference_params(filepath)
     exclude_cols = [
         'Outside_Temp',
         'Air_Flow_Rate',
@@ -154,23 +167,7 @@ def generate_base_signals(
     # Scale factor: 6% of mean flow / 16°C temp range = ~244 per degree C
     # NL annual mean temperature = 11°C (KNMI climate data)
     # Used as baseline: deviations above/below drive air flow adjustment
-    monthly_temp_nl = {
-        1: 3.5,   # January
-        2: 4.0,   # February
-        3: 7.0,   # March
-        4: 10.5,  # April
-        5: 14.0,  # May
-        6: 17.0,  # June
-        7: 19.5,  # July
-        8: 19.5,  # August
-        9: 16.0,  # September
-        10: 12.0, # October
-        11: 7.5,  # November
-        12: 4.5   # December
-    }
-
-    avg_temp_month = pd.Series(timestamps.month).map(monthly_temp_nl)
-    temp_effect = (avg_temp_month - 11) * -244
+    temp_effect = (outside_temp - 11) * -244
     air_flow_rate = np.clip(np.random.normal(65258 + temp_effect,
                                              7481,
                                              len(timestamps)),
