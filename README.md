@@ -7,17 +7,18 @@ This generator is based on the [Catalytic Cracking Process Control Dataset](http
 
 ## About
 
-This project generates a realistic synthetic dataset simulating one year of Fluid Catalytic Cracking (FCC) process operations. The generated dataset is based on real-world value ranges and behavioral patterns, including catalyst activity degradation, day/night variation, and process disturbances.
+This project generates a realistic synthetic dataset simulating one year of Fluid Catalytic Cracking (FCC) process operations. The generated dataset is based on real-world value ranges and behavioral patterns derived from a reference Kaggle dataset, including catalyst activity degradation, seasonal temperature variation, and process disturbances.
 
 The dataset is used as the foundation for a Manufacturing Quality Analysis project.
 
 ## Features
 
-- 105.120 rows of process data at 5-minute intervals
+- 105,120 rows of process data at 5-minute intervals
 - Realistic catalyst activity degradation curve with periodic replacement events
-- Day/night variation in feed flow and temperature setpoints
+- Seasonal variation in Air_Flow_Rate driven by NL KNMI monthly climate data
 - Random process disturbances (air flow fluctuations, power dips)
 - Physically realistic correlations between reactor temperature, yield and conversion rate
+- Event probabilities derived from reference dataset using `value_counts()`
 
 ## Dataset Columns
 
@@ -49,14 +50,15 @@ The dataset is used as the foundation for a Manufacturing Quality Analysis proje
 | Reward_Score | Optimization reward score | - |
 | Feed_Change_Event | Feed composition change event | bool |
 | Catalyst_Replacement | Catalyst replacement event | bool |
-| External_Disturbance_Type | Type of external disturbance | str/None |
+| External_Disturbance_Type | Type of external disturbance | str |
 
 ## Project Structure
 
 ```
 synthetic-fcc-dataset/
-├── DESIGN.md               # Technical design document
-├── generate_dataset.py     # Main dataset generator script
+├── DESIGN.md                       # Technical design document
+├── generate_dataset.py             # Main dataset generator script
+├── catalytic_cracking_dataset.csv  # Reference dataset (CC0 license)
 ├── README.md
 ├── .gitignore
 └── LICENSE
