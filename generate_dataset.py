@@ -180,4 +180,29 @@ def generate_base_signals(
     df['Product_Yield'] = product_yield
     df['Conversion_Rate'] = conversion_rate
     return df
+
+def generate_events(timestamps: pd.DatetimeIndex) -> pd.DataFrame:
+    """
+    Function for generating random events that influences the process conditions.
+
+	Args:
+		timestamps: sequence of datetime values defining the time axis of the dataset
+		event_frequency: random generated event.
+	Returns:
+		DataFrame containing columns: Feed_Change_Event, Catalyst_Replacement, External_Disturbance_Type
+    """
+    df = pd.DataFrame()
+    feed_change_event = np.random.choice([0, 1], size=len(timestamps), p=[0.905, 0.095])
+    catalyst_replacement = np.random.choice([0, 1], size=len(timestamps), p=[0.957, 0.043])
+    external_disturbance_type = np.random.choice(['AirFlowFluctuation',
+                                                  'PowerDip',
+                                                  'None'],
+                                                  size=len(timestamps),
+                                                  p=[0.0915, 0.0461, 0.8624])
+
+    df['Feed_Change_Event'] = feed_change_event
+    df['Catalyst_Replacement'] = catalyst_replacement
+    df['External_Disturbance_Type'] = external_disturbance_type
+
+    return df
 # %%
