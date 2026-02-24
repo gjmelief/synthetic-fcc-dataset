@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 
@@ -235,4 +234,3 @@ if __name__ == '__main__':
     final_df = pd.concat([base_df, events_df], axis=1)
     fcc_dataframe = apply_correlations(final_df)
     fcc_dataframe.to_csv('fcc_dataset_large.csv', index=False)
-# %%
